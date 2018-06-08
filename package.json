@@ -1,6 +1,9 @@
 {
   "name": "bountyBG",
   "version": "",
+  "scripts": {
+    "deploy":"node ./deploy/deploy.js"
+  },
   "dependencies": {
     "async": "^2.6.1",
     "solc": "^0.4.24",

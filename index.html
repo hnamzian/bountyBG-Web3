@@ -42,10 +42,15 @@
     </div>
 
     <script>
-        var owner;
+        var bountyABI;
+        var bountyAddress;
+        var bountyOwner;
+        var tokenABI;
+        var tokenAddress;
+        var tokenOwner;
+
         var bountyBG;
-        var abi;
-        var bytecode;
+        var token;
 
         var el = function (id) { return document.querySelector(id); };
         
@@ -88,37 +93,28 @@
             })
         }
 
-        function getOwnerAccount() {
-            return new Promise((resolve, reject) => {
-                web3.eth.getAccounts()
-                .then((accounts) => {
-                    resolve(accounts[0])
-                })
-            })
-        }
-
-        function createERC20Bounty(bountyPoster, tokenAddress, bountyId) {
+        function createERC20Bounty(_bountyPoster, _tokenAddress, _bountyId) {
             return new Promise((resolve, reject) => {
                 bountyBG.methods
-                .createBountyERC20(bountyId, tokenAddress)
-                .send({from: bountyPoster, gas: 3000000})
+                .createBountyERC20(_bountyId, _tokenAddress)
+                .send({from: _bountyPoster, gas: 3000000})
                 .then()
             })
         }
 
         function readContract() {
             return new Promise((resolve, reject) => {
-                $.getJSON('./build/contracts/BountyBG.json', function(data) {
-                    resolve([data.abi, data.bytecode])
+                $.getJSON('./deploy/contracts.json', function(data) {
+                    resolve(data)
                 })
             })
         }
 
-        function setMinBounty(tokenAddress, minBounty) {
+        function setMinBounty(_tokenAddress, _minBounty) {
             return new Promise((resolve, reject) => {
                 bountyBG.methods
-                .setMinBountyToken(tokenAddress, minBounty)
-                .send({from: owner, gas: 3000000})
+                .setMinBountyToken(_tokenAddress, _minBounty)
+                .send({from: bountyOwner, gas: 3000000})
                 .then()
             })
         }
@@ -132,11 +128,11 @@
             })
         }
 
-        function setBountyFee(tokenAddress, bountyFee) {
+        function setBountyFee(_tokenAddress, _bountyFee) {
             return new Promise((resolve, reject) => {
                 bountyBG.methods
-                .setBountyFeeToken(tokenAddress, bountyFee)
-                .send({from: owner, gas: 3000000})
+                .setBountyFeeToken(_tokenAddress, _bountyFee)
+                .send({from: bountyOwner, gas: 3000000})
                 .on('error', reject)
                 .then(resolve)
             })
@@ -151,19 +147,18 @@
             })
         }
 
-        function deploy(owner, abi, bytecode) {
-            return new Promise((resolve, reject) => {
-                new web3.eth.Contract(abi)
-                .deploy({data: bytecode})
-                .send({from: owner, gas: 3000000})
-                .then(resolve)
-            })
-        }
-
         async function main() {
-            [abi, bytecode] = await readContract();
-            owner = await getOwnerAccount();
-            bountyBG = await deploy(owner, abi, bytecode)
+            const data = await readContract();
+            bountyABI = data['bounty abi'];
+            bountyAddress = data['bounty address']
+            bountyOwner = data['bounty owner']
+            tokenABI = data['token abi']
+            tokenAddress = data['token address']
+            tokenOwner = data['token owner']
+
+            bountyBG = new web3.eth.Contract(bountyABI, bountyAddress);
+            token = new web3.eth.Contract(tokenABI, tokenAddress);
+
             await fillPosterAccounts();
             console.log(bountyBG.options.address)
         }
