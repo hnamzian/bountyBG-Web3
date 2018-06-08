@@ -25,7 +25,7 @@
             <div class="column">
                 <div class="row">
                     <input type="number" id="minBounty" placeholder="Minimum Bounty">
-                    <input type="text" id="minFeeTknAddress" placeholder="Token Address">
+                    <input type="text" id="minFeeTokneAddress" placeholder="Token Address">
                 </div>
                 <button id="setMinBounty">Set Min Bounty</button>
                 <button id="getMinBounty">Get Min Bounty</button>
@@ -33,7 +33,7 @@
             <div class="column">
                 <div class="row">
                     <input type="number" id="bountyFee" placeholder="Bounty Fee">
-                    <input type="text" id="bountyFeeTknAddress" placeholder="Token Address">
+                    <input type="text" id="bountyFeeTokenAddress" placeholder="Token Address">
                 </div>
                 <button id="setBountyFee">Set Bounty Fee</button>
                 <button id="getBountyFee">Get Bounty Fee</button>
@@ -59,24 +59,24 @@
         main() 
 
         el("#create").addEventListener("click", async function() {
-            await createERC20Bounty(el('#posterAddress').value, el('#bountyId').value, el('#tokenAddress').value)
+            await createERC20Bounty(el('#posterAddress').value, el('#tokenAddress').value, el('#bountyId').value)
         })
 
         el("#setMinBounty").addEventListener("click", async function() {
-            await setMinBounty(el('#minFeeTknAddress').value, el('#minBounty').value)
+            await setMinBounty(el('#minFeeTokneAddress').value, el('#minBounty').value)
         })
 
         el("#getMinBounty").addEventListener("click", async function() {
-            const minBounty = await getMinBounty(el('#minFeeTknAddress').value)
+            const minBounty = await getMinBounty(el('#minFeeTokneAddress').value)
             console.log(minBounty)
         })
 
         el("#setBountyFee").addEventListener("click", async function() {
-            await setBountyFee(el('#bountyFeeTknAddress').value, el('#bountyFee').value)
+            await setBountyFee(el('#bountyFeeTokenAddress').value, el('#bountyFee').value)
         })
 
         el("#getBountyFee").addEventListener("click", async function() {
-            bountyFee = await getBountyFee(el('#bountyFeeTknAddress').value)
+            bountyFee = await getBountyFee(el('#bountyFeeTokenAddress').value)
             console.log(bountyFee)
         })
 
@@ -160,7 +160,11 @@
             token = new web3.eth.Contract(tokenABI, tokenAddress);
 
             await fillPosterAccounts();
-            console.log(bountyBG.options.address)
+        
+            $('#bountyFeeTokenAddress').val(tokenAddress)
+            $('#minFeeTokneAddress').val(tokenAddress)
+            $('#tokenAddress').val(tokenAddress)
+
         }
         
     </script>
