@@ -14,7 +14,7 @@
     <div class="row">
         <div class="column">
             <h3>Post Bounty</h3>
-            <input type="number" id="tokenAddress" placeholder="Token Address">
+            <input type="text" id="tokenAddress" placeholder="Token Address">
             <select id="posterAddress"></select>
             <input type="number" id="bointyAmount" placeholder="Bounty Amount">
             <input type="number" id="bountyId" placeholder="Bounty Id">
@@ -25,16 +25,18 @@
             <div class="column">
                 <div class="row">
                     <input type="number" id="minBounty" placeholder="Minimum Bounty">
-                    <input type="number" id="minFeeTknAddress" placeholder="Token Address">
+                    <input type="text" id="minFeeTknAddress" placeholder="Token Address">
                 </div>
                 <button id="setMinBounty">Set Min Bounty</button>
+                <button id="getMinBounty">Get Min Bounty</button>
             </div>
             <div class="column">
                 <div class="row">
                     <input type="number" id="bountyFee" placeholder="Bounty Fee">
-                    <input type="number" id="bountyFeeTknAddress" placeholder="Token Address">
+                    <input type="text" id="bountyFeeTknAddress" placeholder="Token Address">
                 </div>
                 <button id="setBountyFee">Set Bounty Fee</button>
+                <button id="getBountyFee">Get Bounty Fee</button>
             </div>
         </div>
     </div>
@@ -51,25 +53,26 @@
 
         main() 
 
-        el("#create").addEventListener("click", function() {
-            bountyBG.methods
-            .createBountyERC20(el('#bountyId').value, el('#tokenAddress').value)
-            .send({from: el('#posterAddress').value, gas: 3000000})
-            .then()
+        el("#create").addEventListener("click", async function() {
+            await createERC20Bounty(el('#posterAddress').value, el('#bountyId').value, el('#tokenAddress').value)
         })
 
-        el("#setMinBounty").addEventListener("click", function() {
-            bountyBG.methods
-            .setMinBountyToken(el('#minFeeTknAddress').value, el('#minBounty').value)
-            .send({from: owner, gas: 3000000})
-            .then()
+        el("#setMinBounty").addEventListener("click", async function() {
+            await setMinBounty(el('#minFeeTknAddress').value, el('#minBounty').value)
         })
 
-        el("#setBountyFee").addEventListener("click", function() {
-            bountyBG.methods
-            .setBountyFeeToken(el('#bountyFeeTknAddress').value, el('#bountyFee').value)
-            .send({from: owner, gas: 3000000})
-            .then()
+        el("#getMinBounty").addEventListener("click", async function() {
+            const minBounty = await getMinBounty(el('#minFeeTknAddress').value)
+            console.log(minBounty)
+        })
+
+        el("#setBountyFee").addEventListener("click", async function() {
+            await setBountyFee(el('#bountyFeeTknAddress').value, el('#bountyFee').value)
+        })
+
+        el("#getBountyFee").addEventListener("click", async function() {
+            bountyFee = await getBountyFee(el('#bountyFeeTknAddress').value)
+            console.log(bountyFee)
         })
 
         function fillPosterAccounts() {
@@ -94,6 +97,15 @@
             })
         }
 
+        function createERC20Bounty(bountyPoster, tokenAddress, bountyId) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .createBountyERC20(bountyId, tokenAddress)
+                .send({from: bountyPoster, gas: 3000000})
+                .then()
+            })
+        }
+
         function readContract() {
             return new Promise((resolve, reject) => {
                 $.getJSON('./build/contracts/BountyBG.json', function(data) {
@@ -102,14 +114,49 @@
             })
         }
 
+        function setMinBounty(tokenAddress, minBounty) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .setMinBountyToken(tokenAddress, minBounty)
+                .send({from: owner, gas: 3000000})
+                .then()
+            })
+        }
+
+        function getMinBounty(tokenAddress) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .getMinBountyToken(tokenAddress)
+                .call()
+                .then(resolve)
+            })
+        }
+
+        function setBountyFee(tokenAddress, bountyFee) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .setBountyFeeToken(tokenAddress, bountyFee)
+                .send({from: owner, gas: 3000000})
+                .on('error', reject)
+                .then(resolve)
+            })
+        }
+
+        function getBountyFee(tokenAddress) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .getBountyFeeToken(tokenAddress)
+                .call()
+                .then(resolve)
+            })
+        }
+
         function deploy(owner, abi, bytecode) {
             return new Promise((resolve, reject) => {
                 new web3.eth.Contract(abi)
                 .deploy({data: bytecode})
                 .send({from: owner, gas: 3000000})
-                .then((contract) => {
-                    resolve(contract)
-                })
+                .then(resolve)
             })
         }
 

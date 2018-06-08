@@ -118,11 +118,19 @@ contract BountyBG {
         minBountyToken[_tokenAddress] = _minBounty;
     }
 
+    function getMinBountyToken(address _tokenAddress) public view returns(uint256) {
+        return minBountyToken[_tokenAddress];
+    }
+
     // my code: Now for any ERC20 token owner can determine bounty fee amount.
     // @tokenAddress: the token contract address.
     // @_bountyFee: bounty Fee in token unit.
     function setBountyFeeToken(address _tokenAddress, uint256 _bountyFee) external onlyOwner {
         bountyFeeToken[_tokenAddress] = _bountyFee;
+    }
+
+    function getBountyFeeToken(address _tokenAddress) public view returns (uint256) {
+        return bountyFeeToken[_tokenAddress];
     }
 
     function setBountyBeneficiariesCount(uint256 _bountyBeneficiariesCount) external onlyOwner {
