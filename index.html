@@ -11,30 +11,31 @@
     
 </head>
 <body>
-    <!-- <section id="createBounty">
-        <div class="container">
-            <h1>Create ERC20 Bounty</h1>
-            <form>
-                <input id="erc20Address" placeholder="ERC20 Address">
-                <input id="bountyId" placeholder="Bounty Id">
-                <button id="createERC20">Create</button>
-            </form>
-        </div>
-    </section> -->
     <div class="row">
         <div class="column">
+            <h3>Post Bounty</h3>
             <input type="number" id="tokenAddress" placeholder="Token Address">
-            <!-- <input type="number" id="posterAddress" placeholder="Poster Address"> -->
             <select id="posterAddress"></select>
             <input type="number" id="bointyAmount" placeholder="Bounty Amount">
             <input type="number" id="bountyId" placeholder="Bounty Id">
             <button id="create">Create</button>
         </div>
         <div class="column">
-            <input type="number" id="minBounty" placeholder="Minimum Bounty">
-            <button id="setMinBounty">Set Min Bounty</button>
-            <input type="number" id="bountyFee" placeholder="Bounty Fee">
-            <button id="setBountyFee">Set Bounty Fee</button>
+            <h3>Admin Panel</h3>
+            <div class="column">
+                <div class="row">
+                    <input type="number" id="minBounty" placeholder="Minimum Bounty">
+                    <input type="number" placeholder="Token Address">
+                </div>
+                <button id="setMinBounty">Set Min Bounty</button>
+            </div>
+            <div class="column">
+                <div class="row">
+                    <input type="number" id="bountyFee" placeholder="Bounty Fee">
+                    <input type="number" placeholder="Token Address">
+                </div>
+                <button id="setBountyFee">Set Bounty Fee</button>
+            </div>
         </div>
     </div>
 
