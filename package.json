@@ -1,0 +1,8 @@
+{
+  "name": "bountyBG",
+  "version": "",
+  "dependencies": {
+    "async": "^2.6.1",
+    "solc": "^0.4.24"
+  }
+}
