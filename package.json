@@ -3,6 +3,7 @@
   "version": "",
   "dependencies": {
     "async": "^2.6.1",
-    "solc": "^0.4.24"
+    "solc": "^0.4.24",
+    "web3": "^1.0.0-beta.34"
   }
 }
