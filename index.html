@@ -25,14 +25,14 @@
             <div class="column">
                 <div class="row">
                     <input type="number" id="minBounty" placeholder="Minimum Bounty">
-                    <input type="number" placeholder="Token Address">
+                    <input type="number" id="minFeeTknAddress" placeholder="Token Address">
                 </div>
                 <button id="setMinBounty">Set Min Bounty</button>
             </div>
             <div class="column">
                 <div class="row">
                     <input type="number" id="bountyFee" placeholder="Bounty Fee">
-                    <input type="number" placeholder="Token Address">
+                    <input type="number" id="bountyFeeTknAddress" placeholder="Token Address">
                 </div>
                 <button id="setBountyFee">Set Bounty Fee</button>
             </div>
@@ -60,14 +60,14 @@
 
         el("#setMinBounty").addEventListener("click", function() {
             bountyBG.methods
-            .setMinBountyToken(el('#minBounty').value)
+            .setMinBountyToken(el('#minFeeTknAddress').value, el('#minBounty').value)
             .send({from: owner, gas: 3000000})
             .then()
         })
 
         el("#setBountyFee").addEventListener("click", function() {
             bountyBG.methods
-            .setBountyFeeToken(el('#bountyFee').value)
+            .setBountyFeeToken(el('#bountyFeeTknAddress').value, el('#bountyFee').value)
             .send({from: owner, gas: 3000000})
             .then()
         })
