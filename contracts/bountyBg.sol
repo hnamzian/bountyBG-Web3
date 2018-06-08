@@ -37,7 +37,7 @@ contract BountyBG {
 
     uint256 public bountyBeneficiariesCount = 2;
     uint256 public bountyDuration = 30 hours;
-    uint256 public bountyDurationPsterAllowed = 48 hours; // or whatever you need
+    uint256 public bountyDurationPosterAllowed = 48 hours; // or whatever you need
 
 
     mapping(uint256 => Bounty) bountyAt;
@@ -82,7 +82,7 @@ contract BountyBG {
     modifier allowedToReward(uint _bountyId) {
         require(
             msg.sender == bountyAt[_bountyId].owner || 
-            (msg.sender == owner && bountyAt[_bountyId].startTime + bountyDurationPsterAllowed > block.timestamp));
+            (msg.sender == owner && bountyAt[_bountyId].startTime + bountyDurationPosterAllowed > block.timestamp));
         _;
     }
 
@@ -214,7 +214,8 @@ contract BountyBG {
 
     // my code: createBountyERC20 is added for when one can create a new bounty but to pay in an ERC20 token
     // @_tokenAddress: ERC20 token address which by payment will be done.
-    function createBountyERC20(uint256 _bountyId, address _tokenAddress) external payable {
+    ///// not needed to be payable
+    function createBountyERC20(uint256 _bountyId, address _tokenAddress) external {
         ERC20Interface token = ERC20Interface(_tokenAddress);
         require(
             minBountyToken[_tokenAddress] > 0 &&

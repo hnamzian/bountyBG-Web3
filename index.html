@@ -21,21 +21,20 @@
             </form>
         </div>
     </section> -->
-
     <div class="row">
         <div class="column">
-            <label>Token Address</label>
             <input type="number" id="tokenAddress" placeholder="Token Address">
-        </div>
-        <div class="column">
-            <label>Bounty Id</label>
+            <!-- <input type="number" id="posterAddress" placeholder="Poster Address"> -->
+            <select id="posterAddress"></select>
+            <input type="number" id="bointyAmount" placeholder="Bounty Amount">
             <input type="number" id="bountyId" placeholder="Bounty Id">
+            <button id="create">Create</button>
         </div>
         <div class="column">
-            <label>
-                <br />
-            </label>
-            <button id="create">Create</button>
+            <input type="number" id="minBounty" placeholder="Minimum Bounty">
+            <button id="setMinBounty">Set Min Bounty</button>
+            <input type="number" id="bountyFee" placeholder="Bounty Fee">
+            <button id="setBountyFee">Set Bounty Fee</button>
         </div>
     </div>
 
@@ -52,10 +51,38 @@
         main() 
 
         el("#create").addEventListener("click", function() {
-            bountyBG.methods.createBountyERC20(
-                el('#bountyId').value, el('#tokenAddress').value
-            ).send({from: owner, gas: 3000000})
+            bountyBG.methods
+            .createBountyERC20(el('#bountyId').value, el('#tokenAddress').value)
+            .send({from: el('#posterAddress').value, gas: 3000000})
+            .then()
         })
+
+        el("#setMinBounty").addEventListener("click", function() {
+            bountyBG.methods
+            .setMinBountyToken(el('#minBounty').value)
+            .send({from: owner, gas: 3000000})
+            .then()
+        })
+
+        el("#setBountyFee").addEventListener("click", function() {
+            bountyBG.methods
+            .setBountyFeeToken(el('#bountyFee').value)
+            .send({from: owner, gas: 3000000})
+            .then()
+        })
+
+        function fillPosterAccounts() {
+            return new Promise((resolve, reject) => {
+                web3.eth.getAccounts()
+                .then((accounts) => {
+                    accounts.forEach(address => {
+                    posterAddress.innerHTML += '<option value="' + address + '">'
+                    + address + '</option>';
+                    })
+                })
+                resolve(true);
+            })
+        }
 
         function getOwnerAccount() {
             return new Promise((resolve, reject) => {
@@ -89,6 +116,7 @@
             [abi, bytecode] = await readContract();
             owner = await getOwnerAccount();
             bountyBG = await deploy(owner, abi, bytecode)
+            await fillPosterAccounts();
             console.log(bountyBG.options.address)
         }
         
