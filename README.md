@@ -35,3 +35,23 @@ web3: As mentioned web.js is javascript library with a lot functionality for the
 ```
 npm install web3
 ```
+
+# Compile constracts with truffle
+
+In order to compile contracts using truffle, it could be easily done by the following command:
+
+```
+truffle compile
+```
+
+#Compile and Deploy contract
+
+A Javascript file named deploy.js is provided for this purpose. It uses solc and web3 to orderly comile and deploy contracts to the ganache-cli testnet. Before deploying contract ganache-cli must be established by the following command in cmd or bash:
+
+```
+ganache-cli
+```
+
+If the testnet is established it provides 10 EOA with their public and private keys. Each one can be used to send transactions to contracts. Each Account has virtually 100 ethers.
+
+Now running deploy.js both bountyBG and Standard ERC20 token will be compiled and deployed to the provided testnet. Besides a json file named contract.json in deploy folder is created containing ABI, bytecode and contract owner of each contract.
