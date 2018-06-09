@@ -18,4 +18,117 @@
             <a class="active" href="#token.html">TOKEN</a>
         </div>
     </div>
+    <div class="container">
+        <h1>ERC20 TOKEN</h1>
+        <div class="column">
+            <div class="row">
+                <div class="col-25">
+                    <label>Token Address</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="tokenAddress" placeholder="Token Address">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label>Current User</label>
+            </div>
+            <div class="col-75">
+                <select id="currentUser"></select>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="container">
+        <h2>APPROVE</h2>
+        <div class="column">
+            <div class="row">
+                <div class="col-25">
+                    <label>Spender Address</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="spenderAddress" placeholder="Spender Address">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label>Token Amount</label>
+                </div>
+                <!-- <div class="col-25"> -->
+                    <input type="text" id="tokenAmount" placeholder="token Amount">
+                    <button id="approve">Approve</button>
+                    <button id="allowance">Allowance</button>
+                <!-- </div> -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var tokenABI;
+        var tokenAddress;
+        var tokenOwner;
+        var bountyAddress;
+
+        var bountyBG;
+        var token;
+
+        var el = function (id) { return document.querySelector(id); };
+        
+        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
+        el('#approve').addEventListener('click', async () => {
+            await token.methods
+            .approve(el('#spenderAddress').value, el('#tokenAmount').value)
+            .send({from: el('#currentUser').value, gas: 3000000});
+        })
+
+        el('#allowance').addEventListener('click', async () => {
+            const allowance = await token.methods
+            .allowance(el('#currentUser').value, el('#spenderAddress').value)
+            .call();
+            console.log(allowance)
+        })
+
+        function fillCurrentUser() {
+            return new Promise((resolve, reject) => {
+                web3.eth.getAccounts()
+                .then((accounts) => {
+                    accounts.forEach(address => {
+                    currentUser.innerHTML += '<option value="' + address + '">'
+                    + address + '</option>';
+                    })
+                })
+                resolve(true);
+            })
+        }
+
+        function readContract() {
+            return new Promise((resolve, reject) => {
+                $.getJSON('./deploy/contracts.json', function(data) {
+                    resolve(data)
+                })
+            })
+        }
+
+        async function main() {
+            const data = await readContract();
+            bountyAddress = data['bounty address']
+            tokenABI = data['token abi']
+            tokenAddress = data['token address']
+            tokenOwner = data['token owner']
+
+            token = new web3.eth.Contract(tokenABI, tokenAddress);
+
+            await fillCurrentUser();
+        
+            $('#tokenAddress').val(tokenAddress);
+            $('#spenderAddress').val(bountyAddress);
+        }
+        
+        main();
+
+    </script>
+
 </body>

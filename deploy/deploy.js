@@ -69,7 +69,7 @@ async function main() {
         'bounty abi': JSON.parse(bountyABI)
     }
     let data = JSON.stringify(contracts);  
-    fs.writeFileSync('contracts.json', data);  
+    fs.writeFileSync('./deploy/contracts.json', data);  
 }   
 
 

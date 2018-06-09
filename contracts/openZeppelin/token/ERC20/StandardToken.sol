@@ -2,6 +2,7 @@ pragma solidity ^0.4.23;
 
 import "./BasicToken.sol";
 import "./ERC20.sol";
+import "../../ownership/Ownable.sol";
 
 
 /**
@@ -11,10 +12,15 @@ import "./ERC20.sol";
  * @dev https://github.com/ethereum/EIPs/issues/20
  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
-contract StandardToken is ERC20, BasicToken {
+contract StandardToken is ERC20, BasicToken, Ownable {
 
   mapping (address => mapping (address => uint256)) internal allowed;
 
+  constructor() public {
+      decimals_ = 18;
+      totalSupply_ = 1e9 * 10 ** decimals_;
+      balances[owner] = totalSupply_;
+  }
 
   /**
    * @dev Transfer tokens from one address to another
