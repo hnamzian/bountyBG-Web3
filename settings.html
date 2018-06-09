@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="./web3/dist/web3.min.js"></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-right">
+            <a href="index.html">CREATE</a>
+            <a class="active" href="settings.html">SETTINGS</a>
+            <a href="token.html">TOKEN</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <div class="column">
+            <div class="row">
+                <div class="col-25">
+                    <label>Token Address</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="tokenAddress" placeholder="Token Address">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label>Minimum Bounty</label>
+                </div>
+                <div class="col-75">
+                    <input type="number" id="minBounty" placeholder="Minimum Bounty">
+                    <button id="setMinBounty">Set Min</button>
+                    <button id="getMinBounty">Get Min</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label>Bounty Fee</label>    
+                </div>
+                <div class="col-75">
+                    <input type="number" id="bountyFee" placeholder="Bounty Fee">
+                    <button id="setBountyFee">Set Fee</button>
+                    <button id="getBountyFee">Get Fee</button>
+                </div>
+            </div>            
+        </div>
+    </div>
+
+    <script>
+        var bountyABI;
+        var bountyAddress;
+        var bountyOwner;
+        var tokenABI;
+        var tokenAddress;
+        var tokenOwner;
+
+        var bountyBG;
+        var token;
+
+        var el = function (id) { return document.querySelector(id); };
+        
+        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
+        el("#setMinBounty").addEventListener("click", async function() {
+            await setMinBounty(el('#tokenAddress').value, el('#minBounty').value)
+        })
+
+        el("#getMinBounty").addEventListener("click", async function() {
+            const minBounty = await getMinBounty(el('#tokenAddress').value)
+            console.log(minBounty)
+        })
+
+        el("#setBountyFee").addEventListener("click", async function() {
+            await setBountyFee(el('#tokenAddress').value, el('#bountyFee').value)
+        })
+
+        el("#getBountyFee").addEventListener("click", async function() {
+            bountyFee = await getBountyFee(el('#tokenAddress').value)
+            console.log(bountyFee)
+        })
+
+        function readContract() {
+            return new Promise((resolve, reject) => {
+                $.getJSON('./deploy/contracts.json', function(data) {
+                    resolve(data)
+                })
+            })
+        }
+
+        function setMinBounty(_tokenAddress, _minBounty) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .setMinBountyToken(_tokenAddress, _minBounty)
+                .send({from: bountyOwner, gas: 3000000})
+                .then()
+            })
+        }
+
+        function getMinBounty(tokenAddress) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .getMinBountyToken(tokenAddress)
+                .call()
+                .then(resolve)
+            })
+        }
+
+        function setBountyFee(_tokenAddress, _bountyFee) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .setBountyFeeToken(_tokenAddress, _bountyFee)
+                .send({from: bountyOwner, gas: 3000000})
+                .on('error', reject)
+                .then(resolve)
+            })
+        }
+
+        function getBountyFee(tokenAddress) {
+            return new Promise((resolve, reject) => {
+                bountyBG.methods
+                .getBountyFeeToken(tokenAddress)
+                .call()
+                .then(resolve)
+            })
+        }
+
+        async function main() {
+            const data = await readContract();
+            bountyABI = data['bounty abi'];
+            bountyAddress = data['bounty address']
+            bountyOwner = data['bounty owner']
+            tokenABI = data['token abi']
+            tokenAddress = data['token address']
+            tokenOwner = data['token owner']
+
+            bountyBG = new web3.eth.Contract(bountyABI, bountyAddress);
+            token = new web3.eth.Contract(tokenABI, tokenAddress);
+        
+            $('#tokenAddress').val(tokenAddress)
+
+        }
+        
+        main();
+
+    </script>
+</body>
