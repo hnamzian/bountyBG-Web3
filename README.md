@@ -83,3 +83,15 @@ On the top of the web page 3 tabs are provided:
 **SETTINGS**: Enables some adjustments needed before creating a new bounty. Those are minimum bounty and bounty fee.
 
 **Token**: This page is provided to interact with ERC20 Token. At this time only Approve tokens can be done.
+
+### Create Bounty
+
+Creating bounty involves 3 steps:
+
+1- Go to the token page and the bounty poster must approve and amount of tokens from his/her balance to bountyBG contract. Import token address (it will be filled automatically at start time with our Standard token), select one of addresses as the user. Note that these are actually the premenioned assigned accounts created by testnet before. Also it must be considered that the first address is the token owner which ownes all tokens, and the second address is the bountyBG contract owner. As the token owner access to all tokens, use the first address from current user. Import bountyBG contract address as the spender Address (it will be filled automatically at start time with our Standard token) as the bounty poster should do it in order that bountyBG would then transfer token to its balance. Finally choose an amount of tokens should be transfered to bountyBG.
+
+2- Go to SETTINGS page and import token address and set minimum bounty and bounty fee related this token.
+
+3- Now you can go to CREATE page, having imported token address and bounty poster (the first address), choose a bounty Id and create your bounty.
+
+Meanwhile doing above instructions you can watch the console pushhing get buttons to ensure everything is going as expected.
