@@ -50,7 +50,7 @@ In order to compile contracts using truffle, it could be easily done by the foll
 truffle compile
 ```
 
-#Compile and Deploy contract
+# Compile and Deploy contract
 
 A Javascript file named deploy.js is provided for this purpose. It uses solc and web3 to orderly comile and deploy contracts to the ganache-cli testnet. Before deploying contract ganache-cli must be established by the following command in cmd or bash:
 
@@ -60,4 +60,26 @@ ganache-cli
 
 If the testnet is established it provides 10 EOA with their public and private keys. Each one can be used to send transactions to contracts. Each Account has virtually 100 ethers.
 
-Now running deploy.js both bountyBG and Standard ERC20 token will be compiled and deployed to the provided testnet. Besides a json file named contract.json in deploy folder is created containing ABI, bytecode and contract owner of each contract.
+Now running deploy.js, using following command, both bountyBG and Standard ERC20 token will be compiled and deployed to the provided testnet. Besides a json file named contract.json in deploy folder is created containing ABI, bytecode and contract owner of each contract.
+
+```
+npm run deploy
+```
+
+# How to use
+
+The front-end is developed by HTML and CSS. In order to use the project first run live-server on any port you want (except 8545 of testnet) using the following command:
+
+```
+live-server --port=8080
+```
+
+Then a web page will immediately loaded on your browser. Pushing F12 key you can also see some logs in console for the purpose of debugging. 
+
+On the top of the web page 3 tabs are provided:
+
+**CREATE**: Enables a web page to create bounty.
+
+**SETTINGS**: Enables some adjustments needed before creating a new bounty. Those are minimum bounty and bounty fee.
+
+**Token**: This page is provided to interact with ERC20 Token. At this time only Approve tokens can be done.
