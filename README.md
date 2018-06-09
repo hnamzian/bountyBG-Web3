@@ -14,16 +14,24 @@ Other requirements are:
 
 truffle: a development environment, testing framework and asset pipeline for Ethereum, aiming to make life as an Ethereum developer easier. Contracts could be compiled, tested and deployed by truffle easily. Please install truffle globlly:
 
+```
 npm install -g truffle
+```
 
 ganache-cli: Provides a local ethereum blockchain testnet. Contracts could be deployed to testnet in developement stage. Please install ganache-cli globally:
 
+```
 npm install -g ganache-cli
+```
 
 solc: Is a javascript library can be used to compile and deploy contracts. Please install solc locally:
 
+```
 npm install --save solc
+```
 
 web3: As mentioned web.js is javascript library with a lot functionality for the ethereum ecosystem. Please install it locally:
 
+```
 npm install web3
+```
