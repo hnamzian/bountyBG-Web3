@@ -14,7 +14,7 @@
     <div class="header">
         <div class="header-right">
             <a href="index.html">CREATE</a>
-            <a href="#settings.html">SETTINGS</a>
+            <a href="settings.html">SETTINGS</a>
             <a class="active" href="#token.html">TOKEN</a>
         </div>
     </div>
@@ -55,11 +55,15 @@
                 <div class="col-25">
                     <label>Token Amount</label>
                 </div>
-                <!-- <div class="col-25"> -->
+                <div class="col-75">
                     <input type="text" id="tokenAmount" placeholder="token Amount">
-                    <button id="approve">Approve</button>
-                    <button id="allowance">Allowance</button>
-                <!-- </div> -->
+                </div>
+            </div>
+            <div class="column">
+                <button id="approve">Approve</button>
+                <button id="allowance">Allowance</button>
+                <button id="balance">Balance</button>
+                <button id="owner">Owner</button>
             </div>
         </div>
     </div>
@@ -89,6 +93,20 @@
             .allowance(el('#currentUser').value, el('#spenderAddress').value)
             .call();
             console.log(allowance)
+        })
+
+        el('#balance').addEventListener('click', async () => {
+            const balance = await token.methods
+            .balanceOf(el('#currentUser').value)
+            .call();
+            console.log(balance)
+        })
+
+        el('#owner').addEventListener('click', async () => {
+            const owner = await token.methods
+            .getOwner()
+            .call();
+            console.log(owner)
         })
 
         function fillCurrentUser() {

@@ -22,6 +22,10 @@ contract StandardToken is ERC20, BasicToken, Ownable {
       balances[owner] = totalSupply_;
   }
 
+  function getOwner() public view returns (address) {
+      return owner;
+  }
+
   /**
    * @dev Transfer tokens from one address to another
    * @param _from address The address which you want to send tokens from

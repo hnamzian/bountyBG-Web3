@@ -39,14 +39,6 @@
         </div>
         <div class="row">
             <div class="col-25">
-                <label>Bounty Amount</label>
-            </div>
-            <div class="col-75">
-                <input type="number" id="bointyAmount" placeholder="Bounty Amount">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-25">
                 <label>Bounty Id</label>
             </div>
             <div class="col-75">
@@ -75,8 +67,9 @@
         
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-        el("#create").addEventListener("click", async function() {
-            await createERC20Bounty(el('#posterAddress').value, el('#tokenAddress').value, el('#bountyId').value)
+        el("#create").addEventListener("click", async () => {
+            const allowance = await createERC20Bounty(el('#posterAddress').value, el('#tokenAddress').value, el('#bountyId').value)
+            console.log(allowance)
         })
 
         function fillPosterAccounts() {
@@ -97,7 +90,7 @@
                 bountyBG.methods
                 .createBountyERC20(_bountyId, _tokenAddress)
                 .send({from: _bountyPoster, gas: 3000000})
-                .then()
+                .then(resolve)
             })
         }
 
