@@ -275,12 +275,14 @@ contract BountyBG {
     }
 
     function getBounty(uint256 _bountyId) external view
-    returns (uint256, address, uint256, uint256, uint256, uint256, bool, bool) {
+    returns (uint256, address, uint256, paymentType, address, uint256, uint256, uint256, bool, bool) {
         Bounty memory bounty = bountyAt[_bountyId];
         return (
             bounty.id,
             bounty.owner,
             bounty.bounty,
+            bounty.payment,
+            bounty.tokenAddress,
             bounty.remainingBounty,
             bounty.startTime,
             bounty.endTime,
