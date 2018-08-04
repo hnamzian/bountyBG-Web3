@@ -1,6 +1,6 @@
 # bountyBG-Web3
 
-BountyBG is an ethereum based smart contract wdeveloped in solidity. Everyone can post a new bounty and others can get rewards for solving
+BountyBG is an ethereum based smart contract developed in solidity. Everyone can post a new bounty and others can get rewards for solving
 these bounties. BountyBG supports both ether and any ERC20 tokens as bounty payments. Here a simple front-end is developed in html5 and CSS for the purpose of creating a new ERC20 bounty. Web3.js is a javascript library used to communicate with smart contracts on Ethereum Blockchain.
 Besides bountyBG contract this project contains a Standard ERC20 token developed by openZeppelin so as to test the process of creating new ERC20 bounty.
 
