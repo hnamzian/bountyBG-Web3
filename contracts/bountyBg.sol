@@ -1,44 +1,30 @@
-pragma solidity ^0.4.14;
+pragma solidity ^0.4.23;
+import "./ERC20Interface.sol";
 
-contract ERC20Interface {
-    function totalSupply() public view returns (uint256);
-    function balanceOf(address who) public view returns (uint256);
-    function transfer(address to, uint256 value) public returns (bool);
-    function allowance(address owner, address spender) public view returns (uint256);
-    function transferFrom(address from, address to, uint256 value) public returns (bool);
-    function approve(address spender, uint256 value) public returns (bool);
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-}
-
+/**
+ @title BountyBG contract to allow ones posting their bounties and in turn 
+ * reward others have done bounty projects.
+ */
 contract BountyBG {
 
     address public owner;
 
     uint256 public bountyCount = 0;
-    // uint256 public minBounty = 10 finney;
-    // uint256 public bountyFee = 2 finney;
-
+    
     uint256 public bountyFee = 2 finney;
     uint256 public minBounty = 10 finney;
-    // my code: 
-    // As the contract is supposed to support any ERC20 contract, the bountyFee and minBounty  
-    // parameter must be determined according to token introduced by bounty owner.
+    
     mapping (address => uint256) bountyFeeToken;
     mapping (address => uint256) minBountyToken;
 
-    // my code: payment types are ether or erc20 type token
     enum paymentType {ETHER, ERC20}
 
-    // uint256 public bountyFeeCount = 0;
-    // my code: bounty fees must be counted with respect to token payments
     mapping (address => uint256) public bountyFeeCount;
 
     uint256 public bountyBeneficiariesCount = 2;
     uint256 public bountyDuration = 30 hours;
-    uint256 public bountyDurationPosterAllowed = 48 hours; // or whatever you need
-
+    uint256 public bountyDurationPsterAllowed = 48 hours;     
 
     mapping(uint256 => Bounty) bountyAt;
 
@@ -50,14 +36,8 @@ contract BountyBG {
         uint256 id;
         address owner;
         uint256 bounty;
-        
-        // my code :
-        // ParameterType: {'ETHER': payment is done by ethereum, 'ERC20': payment is done by any ERC20 Token.}
-        // token Address: {if the payment is done by an ERC20 Token, here the token address must be registered,
-        // -------------:  else, you can put the contract address or leave it blank.}
         paymentType payment;
         address tokenAddress;
-
         uint256 remainingBounty;
         uint256 startTime;
         uint256 endTime;
@@ -69,33 +49,49 @@ contract BountyBG {
         owner = msg.sender;
     }
 
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
     modifier onlyOwner() {
         require(msg.sender == owner);
         _;
     }
 
+    /**
+     * @dev Throws if called by any account other than the bounty poster.
+     */
     modifier onlyPoster(uint _bountyId) {
         require(msg.sender == bountyAt[_bountyId].owner);
         _;
     }
 
+    /**
+     * @dev Throws if called by any account other than the bounty poster OR 
+     * the contract owner only after the bounty deadline.
+     */
     modifier allowedToReward(uint _bountyId) {
         require(
             msg.sender == bountyAt[_bountyId].owner || 
-            (msg.sender == owner && bountyAt[_bountyId].startTime + bountyDurationPosterAllowed > block.timestamp));
+            ((msg.sender == owner) && 
+            (bountyAt[_bountyId].startTime + bountyDurationPsterAllowed > block.timestamp)));
         _;
     }
 
-    // BLOCKGEEKS ACTIONS
-
+    /**
+     * @dev Withdraw an amount of Ether to the contract owner. Could be called only by owner.
+     * @param _amount The amount of Eth must be transfered to the owner address.
+     */
     function withdrawFee(uint256 _amount) external onlyOwner {
         require(_amount <= bountyFeeCount[this]);
         bountyFeeCount[this] -= _amount;
         owner.transfer(_amount);
     }
 
-    // my code: Now owner can also withdraw fees by other ERC20 tokens.
-    // @_tokenAddress: ERC20 token Address
+    /**
+     * @dev Withdraw an amount of tokens of an ERC20 token to the contract owner. Could be called only by owner.
+     * @param _amount The amount of Eth must be transfered to the owner address.
+     * @param _tokanAdress The address of ERC20 Token contract.
+     */
     function withdrawFeeToken(uint256 _amount, address _tokenAddress) external onlyOwner{
         require(_amount <= bountyFeeCount[_tokenAddress]);
         bountyFeeCount[_tokenAddress] -= _amount;
@@ -103,41 +99,55 @@ contract BountyBG {
         token.transfer(owner, _amount);
     }
 
+    /**
+     * @dev sets the duration of bounty projects.
+     * @param _bountyDuration the duration of bounty project must be set.
+     */
     function setBountyDuration(uint256 _bountyDuration) external onlyOwner {
         bountyDuration = _bountyDuration;
     }
 
+    /**
+     * @dev sets minimum amount of Ethers can be assigned as bounty rewards.
+     * @param _minBounty minimum amount of Ethers for bounty rewards.
+     */
     function setMinBounty(uint256 _minBounty) external onlyOwner {
         minBounty = _minBounty;
     }
 
-    // my code: Now for any ERC20 token owner can determine minimum bounty amount.
-    // @tokenAddress: the token contract address.
-    // @_minBounty: minimum bounty amount in token unit.
+    /**
+     * @dev sets minimum token amount of a specified ERC20 Token.
+     * @param _tokenAddress the token contract address.
+     * @param _minBounty minimum bounty amount in token unit.
+     */
     function setMinBountyToken(address _tokenAddress, uint256 _minBounty) external onlyOwner {
         minBountyToken[_tokenAddress] = _minBounty;
     }
 
-    function getMinBountyToken(address _tokenAddress) public view returns(uint256) {
-        return minBountyToken[_tokenAddress];
-    }
-
-    // my code: Now for any ERC20 token owner can determine bounty fee amount.
-    // @tokenAddress: the token contract address.
-    // @_bountyFee: bounty Fee in token unit.
+    /**
+     * @dev determines bounty fee in the unit of a specified ERC20 Token.
+     * @param _tokenAddress the token contract address.
+     * @param _bountyFee bounty Fee in token unit.
+     */
     function setBountyFeeToken(address _tokenAddress, uint256 _bountyFee) external onlyOwner {
         bountyFeeToken[_tokenAddress] = _bountyFee;
     }
 
-    function getBountyFeeToken(address _tokenAddress) public view returns (uint256) {
-        return bountyFeeToken[_tokenAddress];
-    }
-
+    /**
+     * @dev sets number of beneficiaries of bounty projects.
+     * @param _bountyBeneficiariesCount 
+     */
     function setBountyBeneficiariesCount(uint256 _bountyBeneficiariesCount) external onlyOwner {
         bountyBeneficiariesCount = _bountyBeneficiariesCount;
     }
 
-    // code changed: rewardUsers now support payment in any ERC20 token.
+    /**
+     * @dev transfers the specified amount of Ethers or ERC20 tokens to a set of users' addresses.
+     * @param _bountyId bounty project id.
+     * @param _users an array of users must be rewarded.
+     * @param _rewards an array of Ether or Token amounts corresponded to users.
+
+     */
     function rewardUsers(uint256 _bountyId, address[] _users, uint256[] _rewards) external allowedToReward(_bountyId) {
         Bounty storage bounty = bountyAt[_bountyId];
         require(
@@ -173,14 +183,19 @@ contract BountyBG {
             emit RewardStatus("Reward sent", bounty.id, _users[i], _rewards[i]);
             /* if (_users[i].send(_rewards[i])) {
                 bounty.remainingBounty -= _rewards[i];
-                RewardStatus('Reward sent', bounty.id, _users[i], _rewards[i]);
+                RewardStatus("Reward sent", bounty.id, _users[i], _rewards[i]);
             } else {
-                ErrorStatus('Error in reward', bounty.id, _users[i], _rewards[i]);
+                ErrorStatus("Error in reward", bounty.id, _users[i], _rewards[i]);
             } */
         }
     }
 
-    // code changed: rewardUser now support payment in any ERC20 token.
+    /**
+     * @dev transfers a specified amount of Ethers or Tokens to a determined user.
+     * @param _bountyId bounty project id.
+     * @param _user the intended user to be rewarded.
+     * @param _reward the amount of Ethers or Tokens must be rewarded.
+     */
     function rewardUser(uint256 _bountyId, address _user, uint256 _reward) external onlyPoster(_bountyId) {
         Bounty storage bounty = bountyAt[_bountyId];
         require(bounty.remainingBounty >= _reward);
@@ -200,8 +215,11 @@ contract BountyBG {
         emit RewardStatus("Reward sent", bounty.id, _user, _reward);
     }
 
-    // USER ACTIONS TRIGGERED BY METAMASK
-
+    /**
+     * @dev creates a new bounty project with the payment of ETHER and sets its parameters.
+     * @param _bountyId bounty project id.
+     * (!!! _bountyId param seems to be unnecessary. actually bounty id must be set automatically not manually.)
+     */
     function createBounty(uint256 _bountyId) external payable {
         require(
             msg.value >= minBounty + bountyFee
@@ -220,10 +238,13 @@ contract BountyBG {
         emit BountyStatus("Bounty submitted", bounty.id, msg.sender, msg.value);
     }
 
-    // my code: createBountyERC20 is added for when one can create a new bounty but to pay in an ERC20 token
-    // @_tokenAddress: ERC20 token address which by payment will be done.
-    ///// not needed to be payable
-    function createBountyERC20(uint256 _bountyId, address _tokenAddress) external {
+    /**
+     * @dev creates a new bounty project with the payment of an ERC20 Token and sets its parameters.
+     * @param _bountyId bounty project id.
+     * @param _tokenAddress ERC20 Token contract address.
+     * (!!! _bountyId param seems to be unnecessary. actually bounty id must be set automatically not manually.)
+     */
+    function createBountyERC20(uint256 _bountyId, address _tokenAddress) external payable {
         ERC20Interface token = ERC20Interface(_tokenAddress);
         require(
             minBountyToken[_tokenAddress] > 0 &&
@@ -246,7 +267,10 @@ contract BountyBG {
         emit BountyStatus("Bounty submitted with ERC20", bounty.id, msg.sender, bountyAmount);
     }
 
-    // code changed: cancelBounty now support payments with any ERC20 token.
+    /**
+     * @dev cancels a bounty corresponding to a specified bounty id.
+     * @param _bountyId bounty project id.
+     */
     function cancelBounty(uint256 _bountyId) external {
         Bounty storage bounty = bountyAt[_bountyId];
         require(
@@ -268,12 +292,17 @@ contract BountyBG {
         emit BountyStatus("Bounty was canceled", bounty.id, msg.sender, bounty.bounty);
     }
 
-    // CUSTOM GETTERS
-
+    /**
+     * @dev returns the amount of Ethers stored in the contract.
+     */
     function getBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
+    /**
+     * @dev returns the parametrs of a specified bounty.
+     * @param _bountyId bounty project id.
+     */
     function getBounty(uint256 _bountyId) external view
     returns (uint256, address, uint256, uint256, uint256, uint256, bool, bool) {
         Bounty memory bounty = bountyAt[_bountyId];
@@ -288,4 +317,5 @@ contract BountyBG {
             bounty.retracted
         );
     }
+
 }
