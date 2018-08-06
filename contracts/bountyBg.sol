@@ -90,7 +90,7 @@ contract BountyBG {
     /**
      * @dev Withdraw an amount of tokens of an ERC20 token to the contract owner. Could be called only by owner.
      * @param _amount The amount of Eth must be transfered to the owner address.
-     * @param _tokenAdress The address of ERC20 Token contract.
+     * @param _tokenAddress The address of ERC20 Token contract.
      */
     function withdrawFeeToken(uint256 _amount, address _tokenAddress) external onlyOwner{
         require(_amount <= bountyFeeCount[_tokenAddress]);
